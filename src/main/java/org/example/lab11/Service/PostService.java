@@ -2,8 +2,12 @@ package org.example.lab11.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.lab11.ApiResponse.ApiException;
+import org.example.lab11.Model.Category;
 import org.example.lab11.Model.Post;
+import org.example.lab11.Model.User;
+import org.example.lab11.Repository.CategoryRepository;
 import org.example.lab11.Repository.PostRepository;
+import org.example.lab11.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,6 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     public List<Post> getAllPosts(){
         return postRepository.findAll();
@@ -30,6 +36,19 @@ public class PostService {
 
 
     public void addPost(Post post){
+
+        User user= userRepository.getUserById(post.getUserId());
+
+        if (user == null){
+            throw new ApiException("<post-service>userId not found");
+        }
+
+        Category category = categoryRepository.getCategoryById(post.getCategoryId());
+
+        if (category == null){
+            throw new ApiException("<post-service>categoryId not found");
+        }
+
         postRepository.save(post);
     }
 

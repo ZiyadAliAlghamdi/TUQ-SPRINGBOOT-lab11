@@ -3,7 +3,11 @@ package org.example.lab11.Service;
 import lombok.RequiredArgsConstructor;
 import org.example.lab11.ApiResponse.ApiException;
 import org.example.lab11.Model.Comment;
+import org.example.lab11.Model.Post;
+import org.example.lab11.Model.User;
 import org.example.lab11.Repository.CommentRepository;
+import org.example.lab11.Repository.PostRepository;
+import org.example.lab11.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,6 +18,8 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
     public List<Comment> getAllComments(){
         return commentRepository.findAll();
@@ -30,6 +36,19 @@ public class CommentService {
     }
 
     public void addComment(Comment comment){
+
+        User user = userRepository.getUserById(comment.getUserId());
+
+        if (user == null){
+            throw new ApiException("<comment-service> user not found");
+        }
+
+        Post post = postRepository.getPostsById(comment.getPostId());
+
+        if (post == null){
+            throw new ApiException("<comment-service> post not found");
+        }
+
         commentRepository.save(comment);
     }
 
